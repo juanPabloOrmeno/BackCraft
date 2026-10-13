@@ -61,6 +61,7 @@ struct RootView: View {
     @State private var creationTheme = 0
     @State private var sortByName = false
     @State private var confirmRemoval = false
+    @StateObject private var explorer = WebExplorer()
     let navigation = [("Descubrir", "star"), ("Explorar", "square.grid.2x2"), ("Crear", "plus.rectangle"), ("Listas de reproducción", "rectangle.stack"), ("Biblioteca", "rectangle.on.rectangle"), ("Favoritos", "heart")]
     var item: Wallpaper? { library.catalog.wallpapers.first { $0.id == selected } }
     var visible: [Wallpaper] {
@@ -77,6 +78,9 @@ struct RootView: View {
             VStack(spacing: 0) {
                 toolbar
                 Divider().opacity(0.4)
+                if section == "Explorar" {
+                    ExploreView(explorer: explorer)
+                } else {
                 HStack(spacing: 0) {
                     ScrollView {
                         VStack(alignment: .leading, spacing: 28) {
@@ -91,6 +95,7 @@ struct RootView: View {
                         Divider()
                         inspector(item).frame(width: 280)
                     }
+                }
                 }
                 playback
             }
@@ -123,9 +128,11 @@ struct RootView: View {
             Text(section).font(.headline)
             Spacer()
             if library.importing { ProgressView().controlSize(.small); Text("Importando…").font(.caption) }
+            if section != "Explorar" {
             TextField("Buscar fondos", text: $query).textFieldStyle(.roundedBorder).frame(width: 190).accessibilityLabel("Buscar fondos")
             Menu { Button("Nombre") { sortByName = true }; Button("Orden de importación") { sortByName = false } } label: { Image(systemName: "arrow.up.arrow.down") }
                 .menuStyle(.borderlessButton).frame(width: 24).help("Ordenar")
+            }
             Button { library.chooseImport() } label: { Label("Importar", systemImage: "plus") }.disabled(library.importing)
         }.padding(.horizontal, 24).frame(height: 48)
     }
@@ -293,20 +300,8 @@ struct RootView: View {
             Text("BackCraft · reconstrucción nativa").font(.headline)
             Text("Catálogo local y fondos BackCraft. No incluye el servicio de descargas de Cindori, cuenta, sincronización iCloud ni vídeo en la pantalla de bloqueo.").foregroundStyle(.secondary)
             Text("Cerrar la ventana mantiene los fondos animados; ⌘Q detiene los vídeos y las listas. Los fondos estáticos permanecen aplicados.").foregroundStyle(.secondary)
+            Text("BackCraft inicia en la barra superior, sin icono en el Dock. Pulsa su icono para abrir esta ventana; haz clic derecho para acceder a los controles y salir.").foregroundStyle(.secondary)
         }.frame(maxWidth: 650, alignment: .leading)
-    }
-}
-
-struct BackCraftApp: App {
-    @StateObject private var library = Library()
-    @StateObject private var desktop = Desktop()
-    var body: some Scene {
-        Window("BackCraft", id: "main") {
-            RootView().environmentObject(library).environmentObject(desktop)
-        }.defaultSize(width: 1280, height: 820)
-        .commands {
-            CommandGroup(after: .newItem) { Button("Importar fondos…") { library.chooseImport() }.keyboardShortcut("o") }
-        }
     }
 }
 
@@ -315,6 +310,21 @@ struct BackCraftApp: App {
         if CommandLine.arguments.contains("--self-test") {
             do { try await Tests.run(); print("PASS: persistence, import, thumbnails, favorites, playlists, invalid media") }
             catch { fputs("FAIL: \(error)\n", stderr); exit(1) }
-        } else { BackCraftApp.main() }
+        } else if CommandLine.arguments.contains("--menu-bar-test") {
+            do { try Tests.menuBar(); print("PASS: menu-bar-only launch, click opens, close keeps running, reopen reuses window, cleanup") }
+            catch { fputs("FAIL: \(error)\n", stderr); exit(1) }
+        } else if let index = CommandLine.arguments.firstIndex(of: "--web-test"), CommandLine.arguments.count > index + 1,
+                  let url = URL(string: CommandLine.arguments[index + 1]) {
+            do { try await Tests.browser(baseURL: url); print("PASS: WebKit page, attachment download, import, persistence, cancellation, navigation policy") }
+            catch { fputs("FAIL: \(error)\n", stderr); exit(1) }
+        } else if CommandLine.arguments.contains("--moewalls-smoke") {
+            do { try await Tests.moeWallsSmoke() }
+            catch { fputs("FAIL: \(error)\n", stderr); exit(1) }
+        } else {
+            let app = NSApplication.shared
+            let controller = MenuBarController()
+            app.delegate = controller
+            withExtendedLifetime(controller) { app.run() }
+        }
     }
 }

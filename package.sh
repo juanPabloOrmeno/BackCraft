@@ -20,7 +20,8 @@ ln -s /Applications "$STAGE/content/Applications"
 cp "$ROOT/INSTALAR.txt" "$STAGE/content/.background/INSTALAR.txt"
 cp "$ROOT/INSTALAR.txt" "$ROOT/dist/INSTALAR.txt"
 cp "$ROOT/BackCraft.app/Contents/Resources/BackCraft.icns" "$STAGE/content/.VolumeIcon.icns"
-DMG="$ROOT/dist/BackCraft-1.0.0-arm64.dmg"
+VERSION=$(/usr/libexec/PlistBuddy -c 'Print :CFBundleShortVersionString' "$ROOT/Info.plist")
+DMG="$ROOT/dist/BackCraft-$VERSION-arm64.dmg"
 hdiutil create -volname "Instalar BackCraft" -srcfolder "$STAGE/content" -format UDRW "$STAGE/editable.dmg"
 hdiutil attach -readwrite -noverify -noautoopen -mountpoint "$MOUNT" "$STAGE/editable.dmg"
 MOUNTED=true

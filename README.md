@@ -1,7 +1,7 @@
 # BackCraft — aplicación nativa macOS
 
 SwiftUI + AppKit + AVFoundation. No requiere Python, Node ni dependencias externas
-para ejecutarse. El instalable está en `dist/BackCraft-1.0.0-arm64.dmg`.
+para ejecutarse. El instalable está en `dist/BackCraft-1.2.0-arm64.dmg`.
 
 ## Compilar y empaquetar
 
@@ -25,6 +25,15 @@ para conservar la biblioteca existente. Cierra la versión anterior antes de
 abrir BackCraft; ambas versiones comparten almacenamiento.
 
 ## Funciones implementadas
+
+- Inicio solo en la barra superior, sin ventana inicial ni icono en el Dock.
+- Clic en el icono abre la interfaz; cerrar la ventana mantiene el proceso y la
+  reproducción. Clic derecho o Control-clic ofrece controles rápidos y Salir.
+- Explorar muestra MoeWalls mediante WKWebView, con atrás/adelante, inicio,
+  recarga y apertura en navegador. Solo contacta el sitio al abrir Explorar.
+- Descargas mediante WKDownload con elección de destino, cancelación e
+  importación posterior de imágenes o vídeos compatibles. ZIPs se guardan y se
+  muestran en Finder para extracción manual; no se ejecutan archivos descargados.
 
 - Navegación oscura, destacado, carruseles, biblioteca en cuadrícula e inspector.
 - Importación validada de imágenes y vídeos con copia a almacenamiento propio.
@@ -62,3 +71,26 @@ imagen inválida y limpieza de referencias de listas al quitar un fondo.
 Estas pruebas no cambian el fondo del usuario y no prueban por sí solas la
 reproducción de vídeo ni la integración de escritorio. El arranque gráfico se
 observó con REA. `package.sh` verifica la integridad de la imagen con hdiutil.
+
+Prueba gráfica aislada del ciclo de vida de la barra de menús (requiere sesión macOS):
+
+```sh
+"BackdropNative/BackCraft.app/Contents/MacOS/BackCraft" --menu-bar-test
+```
+
+Comprueba la política sin Dock, ausencia de ventana inicial, acción del icono,
+cierre sin terminar, reapertura sin duplicados y limpieza. Usa almacenamiento
+temporal y no aplica fondos.
+
+Pruebas web (Node solo sirve como herramienta de pruebas, no es requisito de la app):
+
+```sh
+node BackdropNative/test-web.mjs
+"BackdropNative/BackCraft.app/Contents/MacOS/BackCraft" --moewalls-smoke
+```
+
+La primera usa un servidor local y WebKit real para probar descarga con cabecera
+attachment, importación, persistencia y cancelación sin descargar contenido de
+terceros. La segunda comprueba que MoeWalls carga en WKWebView; no descarga
+vídeos del sitio ni garantiza todos sus enlaces futuros. MoeWalls es un sitio
+externo, con sus propios contenidos, cookies, anuncios y disponibilidad.

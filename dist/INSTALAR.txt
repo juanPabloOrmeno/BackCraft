@@ -1,18 +1,28 @@
-BACKCRAFT 1.0.0 — macOS 14 o posterior, Apple Silicon (M1/M2/M3/M4 o posterior)
+BACKCRAFT 1.2.0 — macOS 14 o posterior, Apple Silicon (M1/M2/M3/M4 o posterior)
 
 1. Arrastra BackCraft.app a Applications.
 2. Abre BackCraft desde Aplicaciones.
+   Aparecerá solo en la barra superior: pulsa su icono para abrir la interfaz.
+   No muestra ventana al iniciar ni icono en el Dock.
 3. Si macOS bloquea la apertura porque no está notarizada, usa Ajustes del
    Sistema > Privacidad y seguridad > Abrir igualmente, solo si reconoces
    esta compilación local. La app tiene firma ad hoc, no Developer ID.
 
 Importar: imágenes o vídeos locales. Se copian a tu biblioteca de BackCraft.
+Explorar: abre https://moewalls.com/ dentro de la aplicación. Usa el botón de
+descarga del sitio y elige dónde guardar. Al finalizar, pulsa Importar a Biblioteca
+para añadir un vídeo o imagen compatible. Si es un ZIP, usa Mostrar archivo,
+descomprímelo en Finder e importa el vídeo con el botón Importar.
+Puedes volver atrás, avanzar, recargar o abrir la página en tu navegador.
+Las descargas requieren internet y dependen de la disponibilidad de MoeWalls.
 Selecciona una tarjeta para ver sus detalles y aplicar el fondo.
 Selecciona una pantalla o todas las pantallas antes de aplicar.
 En Listas de reproducción crea una lista, marca sus fondos y pulsa Reproducir.
 El intervalo se toma al pulsar Reproducir; vuelve a pulsarlo si lo cambias.
 Los vídeos van silenciados. Los controles inferiores permiten pausar y cambiar.
 Cerrar la ventana mantiene los vídeos. Cmd+Q cierra la app y detiene los vídeos.
+También puedes hacer clic derecho (o Control-clic) en el icono de la barra
+superior para pausar/reanudar el vídeo, cambiar de fondo o salir de BackCraft.
 Detener retira los vídeos; un fondo estático aplicado permanece en macOS.
 
 Datos: ~/Library/Application Support/Backdrop Studio
